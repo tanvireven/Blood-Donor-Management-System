@@ -1,0 +1,429 @@
+//Blood Donor Management System by Tanvir Even
+#include<stdio.h>
+#include<stdlib.h>
+#include<conio.h>
+#include<time.h>
+
+
+
+struct donor
+{
+    int id[10];
+
+    char name[30];
+
+    char address[50];
+
+    int age[3];
+
+    int contact[15];
+
+    char bloodgroup[3];
+
+    int date[20];
+
+} d;
+
+FILE *fp, *ft;
+
+int main()
+{
+    login();
+    struct donor data;
+    int ch;
+    while(1)
+    {
+        system("cls");
+        printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
+
+        printf("\t\t\xdb Blood Donner Management System \xdb\n ");
+
+        printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
+
+        time_t t;
+        time(&t);
+        printf("\t\t     %s",ctime(&t));
+
+        printf("\n\n\t1. *Add Donor\n");
+        printf("\n\t2. *Donor list\n");
+        printf("\n\t3. *Remove Donor\n");
+        printf("\n\t4. *Search Donor\n");
+        printf("\n\t5. *Modify Donor\n");
+        printf("\n\t6. *About Us\n");
+        printf("\n\t7. *User Guideline\n");
+        printf("\n\t0. *Exit\n");
+        printf("\n\t\nEnter your choise!_");
+        scanf("%d",&ch);
+
+        switch(ch)
+        {
+        case 0:
+            exit(0);
+
+        case 1:
+            addDonor();
+            break;
+
+        case 2:
+            donorList();
+            break;
+
+        case 3:
+            removeDonor();
+            break;
+
+        case 4:
+            searchDonor();
+            break;
+
+        case 5:
+            modifyDonor();
+            break;
+        case 6:
+            aboutus();
+            break;
+        case 7:
+            UserGuideline();
+            break;
+
+        default:
+            printf("Invalid Choice...\n\n");
+
+        }
+        printf("\n\nPress Any Key To Continue...");
+        getch();
+    }
+    return 0;
+}
+
+void addDonor()
+{
+    system("cls");
+
+    fp = fopen("donor.txt", "ab");
+
+    printf("\t\t>>Enter Donor Details<< \n\n");
+
+    printf("\nEnter Donor ID: ");
+    fflush(stdin);
+    gets(d.id);
+
+    printf("\nEnter Donor Name: ");
+    fflush(stdin);
+    gets(d.name);
+
+    printf("\nEnter Donor Address: ");
+    fflush(stdin);
+    gets(d.address);
+
+    printf("\nEnter Donor Age: ");
+    fflush(stdin);
+    gets(d.age);
+
+    printf("\nEnter Donor Contact: ");
+    fflush(stdin);
+    gets(d.contact);
+
+    printf("\nEnter Donor Bloodgroup: ");
+    fflush(stdin);
+    gets(d.bloodgroup);
+
+    printf("\n\nDonor Added Successfully");
+
+    fwrite(&d, sizeof(d), 1, fp);
+    fclose(fp);
+}
+
+void donorList()
+{
+
+    system("cls");
+    printf("\t\t<===== Donor List =====>\n\n");
+    printf("ID---------Name---------Address------------Age------------Contact---------Blood-group\n\n\n\n");
+    fp = fopen("donor.txt", "rb");
+    while(fread(&d, sizeof(d), 1, fp) == 1)
+    {
+        printf("%-10s %-10s %-20s %-15s %-15s %-20s\n",d.id, d.name, d.address, d.age,d.contact,d.bloodgroup);
+    }
+
+    fclose(fp);
+}
+void removeDonor()
+{
+    FILE *f,*t;
+    int i=1;
+    int id[20];
+    if((t=fopen("temp.txt","w"))==NULL)
+        exit(0);
+    if((f=fopen("donor.txt","r"))==NULL)
+        exit(0);
+    system("cls");
+    printf("Enter Donor ID to Romove \n");
+    fflush(stdin);
+    scanf("%s",id);
+    while(fread(&d,sizeof(d),1,f)==1)
+    {
+        if(strcmp(d.id,id)==0)
+        {
+            i=0;
+            continue;
+        }
+        else
+            fwrite(&d,sizeof(d),1,t);
+    }
+    if(i==1)
+    {
+        printf("\n\n Donor ID that you enter is not found!!");
+        getch();
+        fclose(f);
+        fclose(t);
+        main();
+    }
+    fclose(f);
+    fclose(t);
+    remove("donor.txt");
+    rename("temp.txt","donor.txt");
+    printf("\n\nThe Donor is successfully removed !!");
+    fclose(f);
+    fclose(t);
+    getch();
+}
+
+void searchDonor()
+{
+    int ch;
+
+    while(1)
+    {
+        system("cls");
+        printf("==========Search Donor=========\n\n\n") ;
+        printf("1.Search by ID\n");
+        printf("2.Search by Name\n");
+        printf("\n\n0.Back to Main Menu\n");
+        printf("\nEnter your choice: ");
+        scanf("%d",&ch);
+        switch(ch)
+        {
+        case 0:
+            main();
+            break;
+
+        case 1:
+            searchById();
+            break;
+        case 2:
+            searchByName();
+            break;
+
+        default:
+            printf("Invalid Chooice");
+        }
+        getch();
+    }
+}
+
+void searchById()
+{
+    system("Cls");
+    FILE *fp;
+    int id[5];
+    int f=1;
+    fp=fopen("donor.txt","r+");
+    if(f==0)
+        exit(0);
+    fflush(stdin);
+    printf("\nEnter ID to search: ");
+    scanf("%s",&id);
+    while(fread(&d, sizeof(d), 1, fp) == 1)
+    {
+        printf("\nID---------Name---------Address------------Age------------Contact---------Blood-group\n\n");
+
+        if(strcmp(d.id,id)==0)
+        {
+            f=0;
+
+            printf("%-10s %-10s %-20s %-15s %-15s %-20s\n",d.id, d.name, d.address, d.age,d.contact,d.bloodgroup);
+            printf("\n\nDonor Found Successfully\n\n");
+            break;
+        }
+    }
+
+
+    fclose(fp);
+    if(f==1)
+    {
+        printf("Donor Not Found");
+    }
+}
+
+void searchByName()
+{
+    system("cls");
+    FILE *fp;
+    char name[15];
+    int f=1;
+    fp=fopen("donor.txt","r+");
+    if(f==0)
+        exit(0);
+    fflush(stdin);
+    printf("\nEnter Name to search: ");
+    scanf("%s",&name);
+    while(fread(&d, sizeof(d), 1, fp) == 1)
+    {
+        printf("\nID---------Name---------Address------------Age------------Contact---------Blood-group\n\n");
+
+        if(strcmp(d.name,name)==0)
+        {
+            f=0;
+
+            printf("%-10s %-10s %-20s %-15s %-15s %-20s\n",d.id, d.name, d.address, d.age,d.contact,d.bloodgroup);
+            printf("\n\nDonor Found Successfully\n\n");
+            break;
+        }
+    }
+
+
+    fclose(fp);
+    if(f==1)
+    {
+        printf("Donor Not Found");
+    }
+
+}
+
+void modifyDonor()
+{
+    system("cls");
+    int id, f=0;
+    printf("\n\tEnter Donner ID to modify: ");
+    scanf("%d", &id);
+    //printf("%-10s %-10s %-20s %-15s %-15s %-20s\n",d.id, d.name, d.address, d.age,d.contact,d.bloodgroup);
+    fp = fopen("donor.txt","rw");
+    while(fread(&d, sizeof(d), 1, fp) == 1)
+    {
+        if(strcmp(d.id,id)==0)
+        {
+            f=0;
+            printf("\nEnter New Donor ID: ");
+            fflush(stdin);
+            gets(d.id);
+
+            printf("\nEnter New Donor Name: ");
+            fflush(stdin);
+            gets(d.name);
+
+            printf("\nEnter New Donor Address: ");
+            fflush(stdin);
+            gets(d.address);
+
+            printf("\nEnter New Donor Age: ");
+            fflush(stdin);
+            gets(d.age);
+
+            printf("\nEnter New Donor Contact: ");
+            fflush(stdin);
+            gets(d.contact);
+
+            printf("\nEnter New Donor Bloodgroup: ");
+            fflush(stdin);
+            gets(d.bloodgroup);
+
+            fseek(fp, -sizeof(d),1);
+            fwrite(&d, sizeof(d),1,fp);
+            fclose(fp);
+            break;
+        }
+    }
+    fclose(fp);
+    if(f==1)
+    {
+        printf("Record not found");
+    }
+    else
+    {
+        printf("Record Modified successfully");
+    }
+}
+void aboutus()
+{
+    system("cls");
+    printf("\n\t\t **** Blood Donor Management System ****\n");
+    printf("This project was created by \n\n\tMd Tanvir Hossain\n\n\tDept. of CSE, Varendra University\n");
+    printf("\n\nFor any query feel free to contact!\n");
+    printf("\nEmail: mdtanvir.h2015@gmail.com\n\nPhone no: 01770965171\n\t  01608514747");
+
+
+}
+
+void UserGuideline()
+{
+    system("cls");
+    printf("\n\t\t **** Blood Donor Management System ****\n");
+    printf("\n\n\n\t\t<===User Guideline===>\n");
+
+    printf("\n\t> This Program is created using C Language.\n");
+    printf("\n\t> Donor information will store in a text file.\n");
+    printf("\n\t> You will found the text file in the same folder.\n");
+    printf("\n\t> Text file create automatically.\n");
+    printf("\n\t> Maximum length of ID is 10 characters.\n");
+    printf("\n\t> Maximum length of Name is 30 characters.\n");
+    printf("\n\t> Maximum length of Address is 50 characters.\n");
+    printf("\n\t> Maximum length of Age is 3 characters.\n");
+    printf("\n\t> Maximum length of Contact is 15 characters.\n");
+    printf("\n\t> Maximum length of Blood-group is 3 characters.\n");
+
+}
+void login()
+{
+    int a=0,i=0;
+    char uname[10],c=' ';
+    char pword[10],code[10];
+    char user[10]="tanvir";
+    char pass[10]="tanvirevn";
+    do
+    {
+
+        printf("\nLogin is required to use this system!");
+        printf(" \n\n\tEnter username: ");
+        scanf("%s", &uname);
+        printf(" \n\n\tEnter password: ");
+        while(i<10)
+        {
+            pword[i]=getch();
+            c=pword[i];
+            if(c==13)
+                break;
+            else
+                printf("*");
+            i++;
+        }
+        pword[i]='\0';
+        i=0;
+        if(strcmp(uname,"tanvir")==0 && strcmp(pword,"tanvirevn")==0)
+        {
+            printf("  \n\n\n LOGIN IS SUCCESSFUL!! \n\nWELCOME TO BLOOD DONOR MANAGEMENT SYSTEM !!!!");
+            printf("\n\n\n\t\t\t\tPress any key to continue...");
+            getch();
+            break;
+        }
+        else
+        {
+            printf("\n        SORRY !!!!  LOGIN IS UNSUCESSFUL");
+            a++;
+
+            getch();
+
+        }
+    }
+    while(a<=2);
+    if (a>2)
+    {
+        printf("\nSorry you have entered the wrong username and password for four times!!!");
+
+        getch();
+
+    }
+    system("cls");
+
+}
+
